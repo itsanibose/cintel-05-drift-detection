@@ -13,11 +13,11 @@ message: "If using this project, please cite it as described in this file."
 type: software
 
 title: cintel-05-drift-detection
-date-released: "2026-03-06"
+date-released: "2026-11-17"
 
 authors:
-  - family-names: Case
-    given-names: Denise M.
+  - family-names: Bose
+    given-names: Anindya
     orcid: "https://orcid.org/0000-0001-6165-7389"
     affiliation: "Northwest Missouri State University, USA"
 
