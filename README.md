@@ -1,8 +1,8 @@
 # cintel-05-drift-detection
 
 [![Python 3.14](https://img.shields.io/badge/python-3.14%2B-blue?logo=python)](pyproject.toml)
-[![CI](https://github.com/denisecase/cintel-05-drift-detection/actions/workflows/ci-python-zensical.yml/badge.svg)](https://github.com/denisecase/cintel-05-drift-detection/actions/workflows/ci-python-zensical.yml)
-[![Documentation](https://img.shields.io/badge/docs-site-blue?logo=github)](https://denisecase.github.io/cintel-05-drift-detection/)
+[![CI](https://github.com/itsanibose/cintel-05-drift-detection/actions/workflows/ci-python-zensical.yml/badge.svg)](https://github.com/itsanibose/cintel-05-drift-detection/actions/workflows/ci-python-zensical.yml)
+[![Documentation](https://img.shields.io/badge/docs-site-blue?logo=github)](https://itsanibose.github.io/cintel-05-drift-detection/)
 
 [![uv managed](https://img.shields.io/badge/uv-managed-DE5FE9)](https://docs.astral.sh/uv/)
 [![ty type checked](https://img.shields.io/badge/ty-type_checked-2F80ED)](https://docs.astral.sh/ty/)
@@ -13,14 +13,21 @@
 
 ## Project Overview
 
-Author: Denise Case
+Author: Anindya Bose
 
-Date: 2026 October
+Date: 2026 November
 
 This project introduces drift detection.
 
 The goal is to compare current measurements against a reference period
 and identify changes that exceed defined thresholds.
+
+To make the drift detection pipeline more resilient against extreme outliers, 
+this project extends the baseline mean comparison by calculating median (P50) 
+and 95th percentile (P95) metrics in Polars. While standard averages can be 
+heavily skewed by a few isolated spikes, tracking median and tail latency 
+provides a clearer picture of typical user experience and worst-case performance
+ degradation.
 
 The project is configured in
 [pyproject.toml](pyproject.toml).
@@ -112,7 +119,7 @@ uv run pytest
 
 ## Project Documentation
 
-The [hosted documentation site](https://denisecase.github.io/cintel-05-drift-detection/)
+The [hosted documentation site](https://itsanibose.github.io/cintel-05-drift-detection/)
 is published using Zensical and GitHub Pages.
 
 The documentation site is used to present the project report,
