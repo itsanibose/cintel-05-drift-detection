@@ -20,9 +20,9 @@ Two datasets represent different observation periods:
 Each contains measurements of requests,
 errors, and total latency.
 
-[View Reference Data](https://github.com/denisecase/cintel-05-drift-detection/blob/main/data/reference_metrics.csv)
+[View Reference Data](https://github.com/itsanibose/cintel-05-drift-detection/blob/main/data/reference_metrics.csv)
 
-[View Current Data](https://github.com/denisecase/cintel-05-drift-detection/blob/main/data/current_metrics.csv)
+[View Current Data](https://github.com/itsanibose/cintel-05-drift-detection/blob/main/data/current_metrics.csv)
 
 ## Methods
 
