@@ -22,10 +22,10 @@ This project introduces drift detection.
 The goal is to compare current measurements against a reference period
 and identify changes that exceed defined thresholds.
 
-To make the drift detection pipeline more resilient against extreme outliers, 
-this project extends the baseline mean comparison by calculating median (P50) 
-and 95th percentile (P95) metrics in Polars. While standard averages can be 
-heavily skewed by a few isolated spikes, tracking median and tail latency 
+To make the drift detection pipeline more resilient against extreme outliers,
+this project extends the baseline mean comparison by calculating median (P50)
+and 95th percentile (P95) metrics in Polars. While standard averages can be
+heavily skewed by a few isolated spikes, tracking median and tail latency
 provides a clearer picture of typical user experience and worst-case performance
  degradation.
 
