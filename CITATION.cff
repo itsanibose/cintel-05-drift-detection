@@ -13,16 +13,16 @@ message: "If using this project, please cite it as described in this file."
 type: software
 
 title: cintel-05-drift-detection
-date-released: "2026-11-17"
+date-released: "2026-11-22"
 
 authors:
   - family-names: Bose
     given-names: Anindya
-    orcid: "https://orcid.org/0000-0001-6165-7389"
+    orcid: "https://orcid.org/0009-0001-6404-4366"
     affiliation: "Northwest Missouri State University, USA"
 
-repository-code: "https://github.com/denisecase/cintel-05-drift-detection"
-url: "https://github.com/denisecase/cintel-05-drift-detection"
+repository-code: "https://github.com/itsanibose/cintel-05-drift-detection"
+url: "https://github.com/itsanibose/cintel-05-drift-detection"
 license: MIT
 
 abstract: |

@@ -59,9 +59,9 @@ async def _():
     import polars as pl
 
     from cintel.utils_stats import compare_error_rates
-    from cintel.utils_system import compute_drift_summary, load_system_metrics
+    from cintel.utils_system import compute_drift_summary2, load_system_metrics
 
-    return compare_error_rates, compute_drift_summary, load_system_metrics, mo, pl, sys
+    return compare_error_rates, compute_drift_summary2, load_system_metrics, mo, pl, sys
 
 
 # === TITLE AND INTRODUCTION ===
@@ -100,7 +100,7 @@ def _(load_system_metrics, mo, sys):
     current_filename = "current_metrics.csv"
 
     if sys.platform == "emscripten":
-        from pyodide.http import open_url  # ty: ignore[unresolved-import]
+        from pyodide.http import open_url  # ty: ignore[import-not-found]
 
         reference_url = notebook_location / "public" / reference_filename
         current_url = notebook_location / "public" / current_filename
@@ -150,10 +150,25 @@ def _(mo):
     )
     errors_threshold = mo.ui.slider(0, 10, value=2, label="Errors drift threshold")
     latency_threshold = mo.ui.slider(
-        0, 3000, value=1000, step=100, label="Latency drift threshold (ms)"
+        0, 3000, value=1000, step=100, label="Latency mean drift threshold (ms)"
     )
-    mo.vstack([requests_threshold, errors_threshold, latency_threshold])
-    return errors_threshold, latency_threshold, requests_threshold
+    latency_p95_threshold = mo.ui.slider(
+        0, 3000, value=1200, step=100, label="Latency P95 drift threshold (ms)"
+    )
+    mo.vstack(
+        [
+            requests_threshold,
+            errors_threshold,
+            latency_threshold,
+            latency_p95_threshold,
+        ]
+    )
+    return (
+        errors_threshold,
+        latency_p95_threshold,
+        latency_threshold,
+        requests_threshold,
+    )
 
 
 # === COMPUTE DRIFT SUMMARY (SAME LOGIC AS THE CLI PIPELINE) ===
@@ -161,19 +176,21 @@ def _(mo):
 
 @app.cell
 def _(
-    compute_drift_summary,
+    compute_drift_summary2,
     current_df,
     errors_threshold,
     latency_threshold,
+    latency_p95_threshold,
     reference_df,
     requests_threshold,
 ):
-    drift_df = compute_drift_summary(
+    drift_df = compute_drift_summary2(
         reference_df,
         current_df,
         requests_threshold=requests_threshold.value,
         errors_threshold=errors_threshold.value,
         latency_threshold=latency_threshold.value,
+        latency_p95_threshold=latency_p95_threshold.value,
     )
     return (drift_df,)
 

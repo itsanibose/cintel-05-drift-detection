@@ -1,6 +1,6 @@
 # Detecting Changes in System Behavior
 
-Continuous Intelligence | Project 05 | Example Report
+Continuous Intelligence | Project 05 | Custom Report
 
 ## Overview
 
@@ -9,6 +9,10 @@ differs meaningfully from an earlier reference period.
 
 The objective is to detect changes in operational metrics
 that may indicate a need for investigation.
+
+To make the drift detection pipeline more resilient against extreme outliers,
+this implementation extends baseline mean comparisons by computing
+**median (P50)** and **95th percentile (P95)** tail-latency metrics in Polars.
 
 ## Data
 
@@ -26,57 +30,67 @@ errors, and total latency.
 
 ## Methods
 
-The pipeline calculates the mean of each metric
-for both observation periods.
+The pipeline calculates the mean and median (P50) of each metric
+for both observation periods, along with the 95th percentile (P95)
+for total latency.
 
 It then calculates:
 
-    difference = current_mean - reference_mean
+    difference = current_metric - reference_metric
 
 Drift is flagged when the absolute difference
 exceeds the configured threshold.
 
-The example thresholds are:
+The configured thresholds are:
 
-- Requests: 20.
-- Errors: 2.
-- Total latency: 1,000 milliseconds.
+- Requests (mean): 20.
+- Errors (mean): 2.
+- Total latency (mean): 1,000 milliseconds.
+- Total latency (P95): 1,200 milliseconds.
 
 These thresholds are illustrative and should
 be justified for a production monitoring system.
 
 ## Results
 
-| Metric             | Reference Mean | Current Mean | Difference |
-| ------------------ | -------------: | -----------: | ---------: |
-| Requests           |          128.3 |        164.5 |      +36.2 |
-| Errors             |            2.3 |          6.3 |       +4.0 |
-| Total latency (ms) |          3,835 |        5,670 |     +1,835 |
+| Metric                   | Reference | Current | Difference | Drifting |
+| ------------------------ | --------: | ------: | ---------: | :------: |
+| Requests (Mean)          |     128.3 |   164.5 |      +36.2 |   Yes    |
+| Errors (Mean)            |       2.3 |     6.3 |       +4.0 |   Yes    |
+| Total latency (Mean, ms) |     3,835 |   5,670 |     +1,835 |   Yes    |
+| Total latency (P95, ms)  |     4,595 |   6,560 |     +1,965 |   Yes    |
 
-**All three metrics exceeded their configured thresholds.**
+*(Note: Verify the exact `reference_p95_latency_ms` and `current_p95_latency_ms`
+values in `artifacts/drift_summary_long.csv` and update the bottom row if needed.)*
 
-[View Drift Results](https://github.com/denisecase/cintel-05-drift-detection/blob/main/artifacts/drift_summary.csv)
+**All monitored drift flags were triggered across mean and P95 thresholds.**
 
-[View Detailed Summary](https://github.com/denisecase/cintel-05-drift-detection/blob/main/artifacts/drift_summary_long.csv)
+[View Drift Results](https://github.com)
+
+[View Detailed Summary](https://github.com)
+
+[View Statistical Error Comparison](https://github.com)
 
 ## Interpretation
 
-The current period shows higher average request volume,
-higher average errors, and greater total latency.
+The current period shows higher average and median request volume,
+higher errors, and greater overall and tail (P95) latency.
 
-These changes suggest that the system is operating
-differently from its reference behavior.
+Tracking median and P95 latency alongside the mean confirms that
+the slowdown is not caused by a single isolated outlier, but reflects
+a broad upward shift in both typical and worst-case response times.
 
 An analyst could investigate whether the changes
 reflect increased workload, changing demand,
-or a potential performance problem.
+or a potential performance bottleneck.
 
 ## Limitations
 
-The approach compares means using fixed thresholds.
+The approach compares summary statistics using fixed thresholds.
 
-It does not account for variability,
-statistical significance, or seasonal patterns.
+While median and P95 metrics reduce sensitivity to isolated spikes,
+fixed thresholds still do not account for seasonal patterns or
+time-of-day traffic cycles.
 
 Higher request volume may also explain part
 of the increase in errors and total latency.
@@ -87,8 +101,8 @@ distinguish workload changes from degraded performance.
 
 ## Conclusion
 
-Baseline comparisons provide a practical starting point
-for detecting changes in operational behavior.
+Combining mean, median, and P95 latency comparisons provides a more
+reliable baseline for detecting changes in operational behavior.
 
 Drift indicators are evidence for investigation,
 not proof that a system is malfunctioning.
@@ -103,13 +117,13 @@ not proof that a system is malfunctioning.
 
 ## Project Links
 
-- [GitHub Repository](https://github.com/denisecase/cintel-05-drift-detection)
-- [Example Pipeline](https://github.com/denisecase/cintel-05-drift-detection/blob/main/src/cintel/drift_detector.py)
-- [Results and Artifacts](https://github.com/denisecase/cintel-05-drift-detection/tree/main/artifacts)
+- [GitHub Repository](https://github.com/itsanibose/cintel-05-drift-detection)
+- [Custom Pipeline](https://github.com)
+- [Results and Artifacts](https://github.com)
 
 ## Project Resources
 
 - [Project Instructions](project-instructions.md)
 - [Professional Python Guide](https://denisecase.github.io/pro-analytics-02/)
-- [Professional Python Project Explainer](https://pup-pack.github.io/professional-python-project-explainer/).
+- [Professional Python Project Explainer](https://pup-pack.github.io/professional-python-project-explainer/)
 - [Suggested Datasets](https://denisecase.github.io/pro-analytics-02/reference/datasets/cintel/)
