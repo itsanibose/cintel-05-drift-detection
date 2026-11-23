@@ -203,6 +203,7 @@ git push -u origin main
 
 - Use the **UP ARROW** and **DOWN ARROW** in the terminal to scroll through past commands.
 - Use `CTRL+f` to find (and replace) text within a file.
+- Keeping static type-checking rules explicit and up to date prevents configuration drift and keeps automated CI checks green as tools evolve.
 
 ## Developer Tools
 
