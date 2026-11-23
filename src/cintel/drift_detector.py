@@ -1,7 +1,7 @@
 """drift_detector.py - Project script (example).
 
-Author: Your Name Here
-Date: 2026-mm-dd
+Author: Anindya Bose
+Date: 2026-11-22
 
 Reference and Current System Metrics Data
 
@@ -69,7 +69,7 @@ from datafun_toolkit.logger import get_logger, log_header, log_path
 import polars as pl
 
 from cintel.utils_stats import compare_error_rates
-from cintel.utils_system import compute_drift_summary, load_system_metrics
+from cintel.utils_system import compute_drift_summary2, load_system_metrics
 
 # === CONFIGURE LOGGER ===
 
@@ -102,6 +102,8 @@ SUMMARY_LONG_FILE: Final[Path] = ARTIFACTS_DIR / "drift_summary_long.csv"
 REQUESTS_DRIFT_THRESHOLD: Final[float] = 20.0
 ERRORS_DRIFT_THRESHOLD: Final[float] = 2.0
 LATENCY_DRIFT_THRESHOLD: Final[float] = 1000.0
+LATENCY_P95_DRIFT_THRESHOLD: Final[float] = 1200.0
+
 
 # === DEFINE THE MAIN FUNCTION ===
 
@@ -140,22 +142,24 @@ def main() -> None:
     LOG.info(f"Loaded {current_df.height} current records")
 
     # ----------------------------------------------------
-    # STEP 2: SUMMARIZE EACH PERIOD, COMPARE, AND FLAG DRIFT
+    # STEP 2: SUMMARIZE EACH PERIOD WITH MEANS, MEDIANS, AND P95, COMPARE, AND FLAG DRIFT
     # ----------------------------------------------------
-    # compute_drift_summary() does the full comparison in one call:
+    # compute_drift_summary2() does the full comparison in one call:
     # averages each period, combines them into one row, computes the
-    # difference of means, and flags drift where |difference| exceeds
+    # difference of means, medians, and P95, and flags drift where |difference| exceeds
     # the given threshold — see utils_system.py for exactly how.
     LOG.info(f"REQUESTS_DRIFT_THRESHOLD: {REQUESTS_DRIFT_THRESHOLD}")
     LOG.info(f"ERRORS_DRIFT_THRESHOLD: {ERRORS_DRIFT_THRESHOLD}")
     LOG.info(f"LATENCY_DRIFT_THRESHOLD: {LATENCY_DRIFT_THRESHOLD}")
+    LOG.info(f"LATENCY_P95_DRIFT_THRESHOLD: {LATENCY_P95_DRIFT_THRESHOLD}")
 
-    drift_df: pl.DataFrame = compute_drift_summary(
+    drift_df: pl.DataFrame = compute_drift_summary2(
         reference_df,
         current_df,
         requests_threshold=REQUESTS_DRIFT_THRESHOLD,
         errors_threshold=ERRORS_DRIFT_THRESHOLD,
         latency_threshold=LATENCY_DRIFT_THRESHOLD,
+        latency_p95_threshold=LATENCY_P95_DRIFT_THRESHOLD,
     )
 
     LOG.info("Calculated summary differences and drift flags")

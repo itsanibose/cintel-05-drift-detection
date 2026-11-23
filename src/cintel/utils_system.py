@@ -145,3 +145,83 @@ def compute_drift_summary(
             ),
         ]
     )
+
+
+def compute_drift_summary2(
+    reference_df: pl.DataFrame,
+    current_df: pl.DataFrame,
+    requests_threshold: float,
+    errors_threshold: float,
+    latency_threshold: float,
+    latency_p95_threshold: float = 1200.0,
+) -> pl.DataFrame:
+    """Compare mean, median (P50), and P95 metrics between two periods and flag drift."""
+    reference_summary = reference_df.select(
+        [
+            pl.col("requests").mean().alias("reference_avg_requests"),
+            pl.col("errors").mean().alias("reference_avg_errors"),
+            pl.col("total_latency_ms").mean().alias("reference_avg_latency_ms"),
+            pl.col("requests").median().alias("reference_median_requests"),
+            pl.col("errors").median().alias("reference_median_errors"),
+            pl.col("total_latency_ms").median().alias("reference_median_latency_ms"),
+            pl.col("total_latency_ms").quantile(0.95).alias("reference_p95_latency_ms"),
+        ]
+    )
+    current_summary = current_df.select(
+        [
+            pl.col("requests").mean().alias("current_avg_requests"),
+            pl.col("errors").mean().alias("current_avg_errors"),
+            pl.col("total_latency_ms").mean().alias("current_avg_latency_ms"),
+            pl.col("requests").median().alias("current_median_requests"),
+            pl.col("errors").median().alias("current_median_errors"),
+            pl.col("total_latency_ms").median().alias("current_median_latency_ms"),
+            pl.col("total_latency_ms").quantile(0.95).alias("current_p95_latency_ms"),
+        ]
+    )
+    combined = pl.concat(
+        [reference_summary, current_summary], how="horizontal"
+    ).with_columns(
+        [
+            (pl.col("current_avg_requests") - pl.col("reference_avg_requests"))
+            .round(2)
+            .alias("requests_mean_difference"),
+            (pl.col("current_avg_errors") - pl.col("reference_avg_errors"))
+            .round(2)
+            .alias("errors_mean_difference"),
+            (pl.col("current_avg_latency_ms") - pl.col("reference_avg_latency_ms"))
+            .round(2)
+            .alias("latency_mean_difference_ms"),
+            (pl.col("current_median_requests") - pl.col("reference_median_requests"))
+            .round(2)
+            .alias("requests_median_difference"),
+            (pl.col("current_median_errors") - pl.col("reference_median_errors"))
+            .round(2)
+            .alias("errors_median_difference"),
+            (
+                pl.col("current_median_latency_ms")
+                - pl.col("reference_median_latency_ms")
+            )
+            .round(2)
+            .alias("latency_median_difference_ms"),
+            (pl.col("current_p95_latency_ms") - pl.col("reference_p95_latency_ms"))
+            .round(2)
+            .alias("latency_p95_difference_ms"),
+        ]
+    )
+
+    return combined.with_columns(
+        [
+            (pl.col("requests_mean_difference").abs() > requests_threshold).alias(
+                "requests_is_drifting_flag"
+            ),
+            (pl.col("errors_mean_difference").abs() > errors_threshold).alias(
+                "errors_is_drifting_flag"
+            ),
+            (pl.col("latency_mean_difference_ms").abs() > latency_threshold).alias(
+                "latency_is_drifting_flag"
+            ),
+            (pl.col("latency_p95_difference_ms").abs() > latency_p95_threshold).alias(
+                "latency_p95_is_drifting_flag"
+            ),
+        ]
+    )
